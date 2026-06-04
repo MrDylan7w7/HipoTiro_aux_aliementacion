@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guía de Alimentos - Hipertiroidismo</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --green: #d4edda; --green-border: #28a745; --green-text: #155724;
+            --yellow: #fff3cd; --yellow-border: #ffc107; --yellow-text: #856404;
+            --red: #f8d7da; --red-border: #dc3545; --red-text: #721c24;
+            --gray: #e2e3e5; --gray-border: #6c757d; --gray-text: #383d41;
+            --primary: #27ae60;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 { text-align: center; color: #2c3e50; font-size: 1.5rem; margin: 0 0 5px 0; }
+        .subtitle { text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+        
+        .alert-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #f39c12;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .alert-box h3 { margin: 0 0 8px 0; color: #d35400; font-size: 1rem; }
+        .alert-box ul { margin: 5px 0; padding-left: 20px; }
+        .alert-box li { margin: 4px 0; }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 14px;
+            font-size: 1.1rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--primary); }
+        
+        .btn-add {
+            padding: 14px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 50px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #ccc;
+            margin-bottom: 15px;
+        }
+        .tag {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            animation: popIn 0.2s ease-out;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .tag .remove {
+            background: #1565c0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0;
+        }
+
+        .buttons { display: flex; gap: 10px; margin-top: 15px; }
+        button.action-btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button.action-btn:active { transform: scale(0.97); }
+        .btn-analyze { background-color: var(--primary); color: white; }
+        .btn-clear { background-color: #95a5a6; color: white; flex: 0.4; }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 14px; height: 14px; border-radius: 50%; }
+
+        #results { margin-top: 25px; }
+        .food-card {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border-left: 6px solid;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .food-card h3 { margin: 0 0 6px 0; font-size: 1.15rem; text-transform: capitalize; }
+        .food-card p { margin: 4px 0; font-size: 0.95rem; }
+        .food-card .minerales { font-size: 0.85rem; opacity: 0.85; margin-top: 6px; font-style: italic; }
+        
+        .status-permitido { background-color: var(--green); border-color: var(--green-border); color: var(--green-text); }
+        .status-moderacion { background-color: var(--yellow); border-color: var(--yellow-border); color: var(--yellow-text); }
+        .status-evitar { background-color: var(--red); border-color: var(--red-border); color: var(--red-text); }
+        .status-desconocido { background-color: var(--gray); border-color: var(--gray-border); color: var(--gray-text); }
+
+        .summary-box {
+            background: #e8f5e9;
+            border: 1px solid #81c784;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        .disclaimer {
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #777;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🦋 Guía de Alimentos</h1>
+    <p class="subtitle">Para <strong>Hipertiroidismo</strong> · Canasta Básica GT</p>
+    
+    <div class="alert-box">
+        <h3>⚠️ Reglas de Oro</h3>
+        <ul>
+            <li><strong>🚫 Evitar:</strong> Café, gaseosas, chocolate, exceso de azúcar.</li>
+            <li><strong>⚠️ Cuidado con el yodo:</strong> Sal en exceso, mariscos, algas.</li>
+            <li><strong>✅ Comer:</strong> Repollo, brócoli, coliflor (ayudan a controlar la tiroides).</li>
+        </ul>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green-border)"></div> Permitido</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--yellow-border)"></div> Moderación</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red-border)"></div> Evitar</div>
+    </div>
+    
+    <label style="font-weight:bold; margin-bottom:8px; display:block;">1. Escribe o selecciona un alimento:</label>
+    <div class="input-group">
+        <input type="text" id="foodInput" list="foodSuggestions" placeholder="Ej: pollo, cafe, frijol..." autocomplete="off">
+        <datalist id="foodSuggestions">
+            <!-- Se llena automáticamente con JavaScript -->
+        </datalist>
+        <button class="btn-add" onclick="agregarAlimento()" title="Agregar">+</button>
+    </div>
+
+    <label style="font-weight:bold; margin-bottom:8px; display:block;">2. Tu lista:</label>
+    <div class="tags-container" id="tagsContainer">
+        <span style="color:#999; font-size:0.9rem; width:100%; text-align:center; padding-top:10px;" id="emptyMsg">La lista está vacía. Agrega alimentos arriba.</span>
+    </div>
+
+    <div class="buttons">
+        <button class="action-btn btn-clear" onclick="limpiarTodo()">🗑️ Limpiar</button>
+        <button class="action-btn btn-analyze" onclick="analizar()">✅ Analizar Lista</button>
+    </div>
+
+    <div id="results"></div>
+
+    <div class="disclaimer">
+        ⚠️ <strong>Nota:</strong> Guía informativa. Siempre consulta con tu endocrinólogo o nutriólogo.
+    </div>
+</div>
+
+<script>
+    // BASE DE DATOS LOCAL (No necesita API, funciona offline y es instantánea)
+    const baseDeDatos = {
+        "arroz": { estado: "permitido", info: "Excelente fuente de energía. Bajo en yodo, fácil de digerir.", minerales: "Carbohidratos, manganeso, selenio, vitaminas B." },
+        "avena": { estado: "permitido", info: "Muy buena para el corazón. La fibra ayuda a regular el metabolismo.", minerales: "Fibra beta-glucano, magnesio, zinc, hierro, vitaminas B." },
+        "tortilla": { estado: "permitido", info: "Si es de maíz nixtamalizado, aporta calcio biodisponible.", minerales: "Carbohidratos, calcio, fibra, fósforo." },
+        "maiz": { estado: "permitido", info: "Grano entero nutritivo. Base de la alimentación guatemalteca.", minerales: "Fibra, magnesio, fósforo, vitaminas B, antioxidantes." },
+        "pan": { estado: "moderacion", info: "El pan comercial puede contener yodo añadido y mucho sodio.", minerales: "Carbohidratos, algo de hierro y vitaminas B." },
+        "fideo": { estado: "permitido", info: "Fuente de energía. Mejor combinar con verduras y proteínas.", minerales: "Carbohidratos, hierro, vitaminas B." },
+        "papa": { estado: "permitido", info: "Excelente fuente de potasio y energía. Hervida o al horno.", minerales: "Potasio, vitamina C, vitamina B6, magnesio, fibra." },
+        "pollo": { estado: "permitido", info: "Proteína magra excelente. El selenio protege la tiroides.", minerales: "Proteína, selenio, zinc, fósforo, vitaminas B3 y B6." },
+        "carne de res": { estado: "permitido", info: "Fuente importante de hierro y zinc. Preferir cortes magros.", minerales: "Hierro hemo, zinc, selenio, vitamina B12, proteínas." },
+        "cerdo": { estado: "moderacion", info: "Proteína aceptable pero evitar cortes muy grasos.", minerales: "Proteína, tiamina (B1), selenio, zinc, fósforo." },
+        "huevo": { estado: "moderacion", info: "Nutritivo pero la yema contiene yodo. Limitar a 3-4 por semana en crisis.", minerales: "Proteína, selenio, colina, vitaminas A, D, B12, yodo." },
+        "frijol": { estado: "permitido", info: "Excelente proteína vegetal. La fibra regula el metabolismo.", minerales: "Proteína vegetal, hierro, magnesio, potasio, folato, fibra." },
+        "lenteja": { estado: "permitido", info: "Muy nutritiva, rica en hierro y proteína vegetal.", minerales: "Hierro, proteína, folato, magnesio, zinc, fibra." },
+        "leche": { estado: "moderacion", info: "Aporta calcio (el hipertiroidismo debilita huesos), pero tiene algo de yodo.", minerales: "Calcio, proteína, vitamina D, fósforo, potasio, yodo." },
+        "queso": { estado: "moderacion", info: "Bueno para el calcio pero puede tener yodo y mucha sal.", minerales: "Calcio, proteína, fósforo, grasa saturada, sodio." },
+        "crema": { estado: "evitar", info: "Muy alta en grasa saturada. No aporta beneficios significativos.", minerales: "Grasa saturada, algo de calcio, calorías vacías." },
+        "tomate": { estado: "permitido", info: "Rico en licopeno (antioxidante). Bajo en yodo, muy saludable.", minerales: "Licopeno, vitamina C, potasio, vitamina K, folato." },
+        "cebolla": { estado: "permitido", info: "Antiinflamatoria natural. La quercetina protege las células.", minerales: "Quercetina, vitamina C, cromo, fibra, antioxidantes." },
+        "guisquil": { estado: "permitido", info: "Muy bajo en calorías, rico en agua y fibra. Excelente digestión.", minerales: "Vitamina C, folato, potasio, magnesio, fibra." },
+        "repollo": { estado: "permitido", info: "¡EXCELENTE! Los vegetales crucíferos ayudan a reducir la función tiroidea.", minerales: "Vitamina C, K, fibra, folato, isotiocianatos." },
+        "brocoli": { estado: "permitido", info: "¡MUY RECOMENDADO! Vegetal crucífero que ayuda a controlar la tiroides.", minerales: "Vitamina C, K, folato, fibra, sulforafano." },
+        "coliflor": { estado: "permitido", info: "Otro vegetal crucífero excelente para el hipertiroidismo.", minerales: "Vitamina C, K, colina, fibra, isotiocianatos." },
+        "zanahoria": { estado: "permitido", info: "Rica en betacarotenos (vitamina A). Antioxidante potente.", minerales: "Betacaroteno, vitamina K, potasio, fibra." },
+        "aguacate": { estado: "permitido", info: "Grasas saludables antiinflamatorias. Muy bueno para el corazón.", minerales: "Grasas monoinsaturadas, potasio, vitamina E, fibra, magnesio." },
+        "hierba mora": { estado: "permitido", info: "Verdura de hoja verde muy nutritiva, tradicional en Guatemala.", minerales: "Hierro, calcio, vitamina A, vitamina C, fibra." },
+        "banano": { estado: "permitido", info: "Rico en potasio y energía rápida. Bueno para el sistema nervioso.", minerales: "Potasio, vitamina B6, vitamina C, magnesio, fibra." },
+        "platano": { estado: "permitido", info: "Rico en almidón resistente. Muy nutritivo.", minerales: "Potasio, vitamina B6, vitamina C, magnesio, triptófano." },
+        "papaya": { estado: "permitido", info: "Excelente para la digestión gracias a la papaína. Antiinflamatoria.", minerales: "Papaína, vitamina C, vitamina A, folato, fibra." },
+        "piña": { estado: "permitido", info: "La bromelina ayuda a la digestión y es antiinflamatoria.", minerales: "Bromelina, vitamina C, manganeso, vitamina B6, fibra." },
+        "sandia": { estado: "permitido", info: "Muy hidratante. El licopeno es un potente antioxidante.", minerales: "Licopeno, vitamina C, vitamina A, potasio, citrulin." },
+        "naranja": { estado: "permitido", info: "Excelente fuente de vitamina C, fortalece el sistema inmune.", minerales: "Vitamina C, folato, potasio, flavonoides, fibra." },
+        "limon": { estado: "permitido", info: "Alcaliniza el cuerpo. Excelente para aderezar sin usar sal.", minerales: "Vitamina C, ácido cítrico, flavonoides, potasio." },
+        "mango": { estado: "permitido", info: "Fruta tropical muy nutritiva. Rica en vitamina A.", minerales: "Vitamina A, vitamina C, vitamina E, fibra, antioxidantes." },
+        "manzana": { estado: "permitido", info: "Excelente fuente de fibra y antioxidantes.", minerales: "Fibra (pectina), vitamina C, potasio, antioxidantes." },
+        "aceite": { estado: "moderacion", info: "Usar con moderación. Preferir oliva o girasol. Evitar frituras.", minerales: "Grasas, vitamina E." },
+        "cafe": { estado: "evitar", info: "🚫 ¡MUY IMPORTANTE! La cafeína acelera el corazón y puede causar taquicardia severa.", minerales: "Cafeína (estimulante). El riesgo supera los beneficios." },
+        "azucar": { estado: "evitar", info: "🚫 Causa inflamación, picos de energía y estrés para la tiroides.", minerales: "Calorías vacías, sin nutrientes." },
+        "gaseosa": { estado: "evitar", info: "🚫 Doble problema: azúcar + cafeína. Causa taquicardia.", minerales: "Azúcar refinada, cafeína, ácido fosfórico." },
+        "chocolate": { estado: "evitar", info: "🚫 Contiene cafeína y teobromina. Puede empeorar la taquicardia.", minerales: "Cafeína, teobromina, azúcar, grasa." },
+        "sal": { estado: "moderacion", info: "⚠️ La sal de mesa tiene YODO AÑADIDO. Usar MUY poco.", minerales: "Sodio, yodo (añadido)." },
+        "hierbas": { estado: "permitido", info: "¡Excelente para dar sabor sin sal! Muchas son antiinflamatorias.", minerales: "Antioxidantes y compuestos bioactivos." },
+        "embutido": { estado: "evitar", info: "🚫 Muy altos en sodio, conservantes y grasas poco saludables.", minerales: "Sodio excesivo, nitritos, grasas saturadas." },
+        "sopa instantanea": { estado: "evitar", info: "🚫 Altísima en sodio y glutamato. Muy procesada.", minerales: "Sodio, glutamato monosódico, grasas trans." },
+        "pescado": { estado: "moderacion", info: "⚠️ El pescado de mar tiene YODO. Comer con moderación (1-2 veces/semana).", minerales: "Omega-3, proteína, yodo, selenio, vitamina D." },
+        "marisco": { estado: "evitar", info: "🚫 Camarones, cangrejos, etc., son MUY ALTOS EN YODO. Prohibidos.", minerales: "Yodo muy elevado, zinc, proteína." },
+        "alga": { estado: "evitar", info: "🚫 Concentraciones altísimas de yodo. Evitar totalmente.", minerales: "Yodo extremadamente alto." },
+        "nuez": { estado: "moderacion", info: "Las nueces de Brasil son buenas (selenio), pero otras pueden ser estimulantes.", minerales: "Grasas saludables, selenio, vitamina E." },
+        "soya": { estado: "moderacion", info: "⚠️ Puede interferir con los medicamentos antitiroideos. Consultar al médico.", minerales: "Proteína vegetal, isoflavonas, hierro, calcio." },
+        "agua": { estado: "permitido", info: "¡La mejor bebida! Mantenerse hidratado es esencial.", minerales: "Hidratación pura, sin calorías." },
+        "jugo natural": { estado: "permitido", info: "Bueno si es natural y sin azúcar añadida.", minerales: "Vitaminas, minerales, antioxidantes." },
+        "te": { estado: "moderacion", info: "El té verde tiene antioxidantes pero también cafeína. Limitar a 1 taza.", minerales: "Antioxidantes, algo de cafeína." }
+    };
+
+    let listaAlimentos = [];
+
+    // Llenar el datalist para el auto-completado
+    const datalist = document.getElementById('foodSuggestions');
+    Object.keys(baseDeDatos).forEach(alimento => {
+        const option = document.createElement('option');
+        option.value = alimento;
+        datalist.appendChild(option);
+    });
+
+    // Permitir agregar con la tecla Enter
+    document.getElementById('foodInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            agregarAlimento();
+        }
+    });
+
+    function agregarAlimento() {
+        const input = document.getElementById('foodInput');
+        let valor = input.value.trim().toLowerCase();
+        
+        // Si está vacío, no hacer nada
+        if (!valor) return;
+
+        // Normalizar: quitar acentos para mejorar la búsqueda
+        valor = valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+        // Buscar si existe en la base de datos (coincidencia aproximada)
+        let alimentoEncontrado = null;
+        for (const key of Object.keys(baseDeDatos)) {
+            const keyNormalizado = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (keyNormalizado === valor || valor.includes(keyNormalizado) || keyNormalizado.includes(valor)) {
+                alimentoEncontrado = key; // Guardamos el nombre original de la BD
+                break;
+            }
+        }
+
+        const nombreFinal = alimentoEncontrado || input.value.trim(); // Usa el nombre de la BD si lo encontró, si no, el que escribió
+
+        // Evitar duplicados
+        if (listaAlimentos.includes(nombreFinal)) {
+            input.value = '';
+            return;
+        }
+
+        listaAlimentos.push(nombreFinal);
+        input.value = '';
+        input.focus();
+        renderizarTags();
+    }
+
+    function renderizarTags() {
+        const container = document.getElementById('tagsContainer');
+        const emptyMsg = document.getElementById('emptyMsg');
+        
+        if (listaAlimentos.length === 0) {
+            container.innerHTML = '';
+            container.appendChild(emptyMsg);
+            emptyMsg.style.display = 'block';
+            return;
+        }
+
+        container.innerHTML = '';
+        listaAlimentos.forEach((item, index) => {
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.innerHTML = `
+                ${item.charAt(0).toUpperCase() + item.slice(1)}
+                <button class="remove" onclick="eliminarAlimento(${index})" aria-label="Eliminar">×</button>
+            `;
+            container.appendChild(tag);
+        });
+    }
+
+    function eliminarAlimento(index) {
+        listaAlimentos.splice(index, 1);
+        renderizarTags();
+        document.getElementById('results').innerHTML = ''; // Limpiar resultados si se modifica la lista
+    }
+
+    function limpiarTodo() {
+        listaAlimentos = [];
+        renderizarTags();
+        document.getElementById('results').innerHTML = '';
+        document.getElementById('foodInput').value = '';
+    }
+
+    function analizar() {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (listaAlimentos.length === 0) {
+            resultsDiv.innerHTML = '<p style="text-align:center; color:#666; margin-top:20px;">Por favor, agrega al menos un alimento a la lista.</p>';
+            return;
+        }
+
+        let contador = { permitido: 0, moderacion: 0, evitar: 0, desconocido: 0 };
+
+        const summaryBox = document.createElement('div');
+        summaryBox.className = 'summary-box';
+        resultsDiv.appendChild(summaryBox);
+
+        listaAlimentos.forEach(alimento => {
+            const card = document.createElement('div');
+            card.className = 'food-card';
+            
+            let estado = "desconocido";
+            let info = "No tenemos información registrada. Consulta con tu médico.";
+            let minerales = "";
+            let icono = "❓";
+
+            // Buscar en la base de datos
+            const keyMinuscula = alimento.toLowerCase();
+            for (const [key, value] of Object.entries(baseDeDatos)) {
+                if (keyMinuscula.includes(key) || key.includes(keyMinuscula)) {
+                    estado = value.estado;
+                    info = value.info;
+                    minerales = value.minerales || "";
+                    break;
+                }
+            }
+
+            contador[estado]++;
+
+            if (estado === "permitido") {
+                card.classList.add("status-permitido");
+                icono = "✅";
+            } else if (estado === "moderacion") {
+                card.classList.add("status-moderacion");
+                icono = "⚠️";
+            } else if (estado === "evitar") {
+                card.classList.add("status-evitar");
+                icono = "🚫";
+            } else {
+                card.classList.add("status-desconocido");
+            }
+
+            card.innerHTML = `
+                <h3>${icono} ${alimento.charAt(0).toUpperCase() + alimento.slice(1)}</h3>
+                <p><strong>${estado === "desconocido" ? "Consulta al médico" : estado.toUpperCase()}:</strong> ${info}</p>
+                ${minerales ? `<p class="minerales">💎 <strong>Nutrientes:</strong> ${minerales}</p>` : ''}
+            `;
+            resultsDiv.appendChild(card);
+        });
+
+        // Actualizar resumen
+        summaryBox.innerHTML = `
+            <strong>📊 Resumen de tu lista (${listaAlimentos.length} alimentos):</strong><br>
+            ✅ <strong>Permitidos:</strong> ${contador.permitido} | 
+            ⚠️ <strong>Moderación:</strong> ${contador.moderacion} | 
+            🚫 <strong>Evitar:</strong> ${contador.evitar} | 
+            ❓ <strong>Desconocidos:</strong> ${contador.desconocido}
+        `;
+        
+        if (contador.evitar > 0) {
+            summaryBox.innerHTML += '<br><br>⚠️ <strong style="color:#dc3545;">¡Cuidado! Hay alimentos en tu lista que pueden empeorar el hipertiroidismo y causar taquicardia.</strong>';
+        }
+    }
+</script>
+
+</body>
+</html>
